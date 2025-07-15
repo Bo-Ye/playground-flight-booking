@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookingData {
-
     private List<Customer> customers = new ArrayList<>();
     private List<Booking> bookings = new ArrayList<>();
-
 
     public List<Customer> getCustomers() {
         return customers;

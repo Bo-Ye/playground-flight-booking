@@ -11,104 +11,101 @@ import java.util.Random;
 
 @Service
 public class FlightBookingService {
+    // -----------------------------
+    // Booking Database
+    // -----------------------------
+    private final BookingData db;
 
-	// -----------------------------
-	// Booking Database
-	// -----------------------------
-	private final BookingData db;
+    public FlightBookingService() {
+        db = new BookingData();
+        initDemoData();
+    }
 
-	public FlightBookingService() {
-		db = new BookingData();
+    private void initDemoData() {
+        List<String> firstNames = List.of("John", "Jane", "Michael", "Sarah", "Robert");
+        List<String> lastNames = List.of("Doe", "Smith", "Johnson", "Williams", "Taylor");
+        List<String> airportCodes = List.of("LAX", "SFO", "JFK", "LHR", "CDG", "ARN", "HEL", "TXL", "MUC", "FRA", "MAD",
+                "FUN", "SJC");
+        Random random = new Random();
 
-		initDemoData();
-	}
+        var customers = new ArrayList<Customer>();
+        var bookings = new ArrayList<Booking>();
 
-	private void initDemoData() {
-		List<String> firstNames = List.of("John", "Jane", "Michael", "Sarah", "Robert");
-		List<String> lastNames = List.of("Doe", "Smith", "Johnson", "Williams", "Taylor");
-		List<String> airportCodes = List.of("LAX", "SFO", "JFK", "LHR", "CDG", "ARN", "HEL", "TXL", "MUC", "FRA", "MAD",
-				"FUN", "SJC");
-		Random random = new Random();
+        for (int i = 0; i < 5; i++) {
+            String firstName = firstNames.get(i);
+            String lastName = lastNames.get(i);
+            String from = airportCodes.get(random.nextInt(airportCodes.size()));
+            String to = airportCodes.get(random.nextInt(airportCodes.size()));
+            String seatNumber = (random.nextInt(19) + 1) + "A";
+            BookingClass bookingClass = BookingClass.values()[random.nextInt(BookingClass.values().length)];
+            Customer customer = new Customer();
+            customer.setFirstName(firstName);
+            customer.setLastName(lastName);
 
-		var customers = new ArrayList<Customer>();
-		var bookings = new ArrayList<Booking>();
+            LocalDate date = LocalDate.now().plusDays(2 * i);
 
-		for (int i = 0; i < 5; i++) {
-			String firstName = firstNames.get(i);
-			String lastName = lastNames.get(i);
-			String from = airportCodes.get(random.nextInt(airportCodes.size()));
-			String to = airportCodes.get(random.nextInt(airportCodes.size()));
-			String seatNumber = (random.nextInt(19) + 1) + "A";
-			BookingClass bookingClass = BookingClass.values()[random.nextInt(BookingClass.values().length)];
-			Customer customer = new Customer();
-			customer.setFirstName(firstName);
-			customer.setLastName(lastName);
+            Booking booking = new Booking("10" + (i + 1), date, customer, BookingStatus.CONFIRMED, from, to, seatNumber,
+                    bookingClass);
+            customer.getBookings().add(booking);
 
-			LocalDate date = LocalDate.now().plusDays(2 * i);
+            customers.add(customer);
+            bookings.add(booking);
+        }
 
-			Booking booking = new Booking("10" + (i + 1), date, customer, BookingStatus.CONFIRMED, from, to, seatNumber,
-					bookingClass);
-			customer.getBookings().add(booking);
+        // Reset the database on each start
+        db.setCustomers(customers);
+        db.setBookings(bookings);
+    }
 
-			customers.add(customer);
-			bookings.add(booking);
-		}
+    // -----------------------------
+    // Booking Service
+    // -----------------------------
+    public List<BookingDetails> getBookings() {
+        return db.getBookings().stream().map(this::toBookingDetails).toList();
+    }
 
-		// Reset the database on each start
-		db.setCustomers(customers);
-		db.setBookings(bookings);
-	}
+    private Booking findBooking(String bookingNumber, String firstName, String lastName) {
+        return db.getBookings()
+                .stream()
+                .filter(b -> b.getBookingNumber().equalsIgnoreCase(bookingNumber))
+                .filter(b -> b.getCustomer().getFirstName().equalsIgnoreCase(firstName))
+                .filter(b -> b.getCustomer().getLastName().equalsIgnoreCase(lastName))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+    }
 
-	// -----------------------------
-	// Booking Service
-	// -----------------------------
-	public List<BookingDetails> getBookings() {
-		return db.getBookings().stream().map(this::toBookingDetails).toList();
-	}
+    public BookingDetails getBookingDetails(String bookingNumber, String firstName, String lastName) {
+        var booking = findBooking(bookingNumber, firstName, lastName);
+        return toBookingDetails(booking);
+    }
 
-	private Booking findBooking(String bookingNumber, String firstName, String lastName) {
-		return db.getBookings()
-			.stream()
-			.filter(b -> b.getBookingNumber().equalsIgnoreCase(bookingNumber))
-			.filter(b -> b.getCustomer().getFirstName().equalsIgnoreCase(firstName))
-			.filter(b -> b.getCustomer().getLastName().equalsIgnoreCase(lastName))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("Booking not found"));
-	}
+    public void changeBooking(String bookingNumber, String firstName, String lastName, String newDate, String from,
+                              String to) {
+        var booking = findBooking(bookingNumber, firstName, lastName);
+        if (booking.getDate().isBefore(LocalDate.now().plusDays(1))) {
+            throw new IllegalArgumentException("Booking cannot be changed within 24 hours of the start date.");
+        }
+        booking.setDate(LocalDate.parse(newDate));
+        booking.setFrom(from);
+        booking.setTo(to);
+    }
 
-	public BookingDetails getBookingDetails(String bookingNumber, String firstName, String lastName) {
-		var booking = findBooking(bookingNumber, firstName, lastName);
-		return toBookingDetails(booking);
-	}
+    public void cancelBooking(String bookingNumber, String firstName, String lastName) {
+        var booking = findBooking(bookingNumber, firstName, lastName);
+        if (booking.getDate().isBefore(LocalDate.now().plusDays(2))) {
+            throw new IllegalArgumentException("Booking cannot be cancelled within 48 hours of the start date.");
+        }
+        booking.setBookingStatus(BookingStatus.CANCELLED);
+    }
 
-	public void changeBooking(String bookingNumber, String firstName, String lastName, String newDate, String from,
-			String to) {
-		var booking = findBooking(bookingNumber, firstName, lastName);
-		if (booking.getDate().isBefore(LocalDate.now().plusDays(1))) {
-			throw new IllegalArgumentException("Booking cannot be changed within 24 hours of the start date.");
-		}
-		booking.setDate(LocalDate.parse(newDate));
-		booking.setFrom(from);
-		booking.setTo(to);
-	}
+    private BookingDetails toBookingDetails(Booking booking) {
+        return new BookingDetails(booking.getBookingNumber(), booking.getCustomer().getFirstName(),
+                booking.getCustomer().getLastName(), booking.getDate(), booking.getBookingStatus(), booking.getFrom(),
+                booking.getTo(), booking.getSeatNumber(), booking.getBookingClass().toString());
+    }
 
-	public void cancelBooking(String bookingNumber, String firstName, String lastName) {
-		var booking = findBooking(bookingNumber, firstName, lastName);
-		if (booking.getDate().isBefore(LocalDate.now().plusDays(2))) {
-			throw new IllegalArgumentException("Booking cannot be cancelled within 48 hours of the start date.");
-		}
-		booking.setBookingStatus(BookingStatus.CANCELLED);
-	}
-
-	private BookingDetails toBookingDetails(Booking booking) {
-		return new BookingDetails(booking.getBookingNumber(), booking.getCustomer().getFirstName(),
-				booking.getCustomer().getLastName(), booking.getDate(), booking.getBookingStatus(), booking.getFrom(),
-				booking.getTo(), booking.getSeatNumber(), booking.getBookingClass().toString());
-	}
-
-	public void changeSeat(String bookingNumber, String firstName, String lastName, String seatNumber) {
-		var booking = findBooking(bookingNumber, firstName, lastName);
-		booking.setSeatNumber(seatNumber);
-	}
-
+    public void changeSeat(String bookingNumber, String firstName, String lastName, String seatNumber) {
+        var booking = findBooking(bookingNumber, firstName, lastName);
+        booking.setSeatNumber(seatNumber);
+    }
 }

@@ -23,50 +23,38 @@ import io.micrometer.observation.ObservationPredicate;
 @Theme(value = "customer-support-agent")
 @Push
 public class Application implements AppShellConfigurator {
+    public static void main(String[] args) {
+        new SpringApplicationBuilder(Application.class).run(args);
+    }
 
-	public static void main(String[] args) {
-		new SpringApplicationBuilder(Application.class).run(args);
-	}
+    // Ingest the document into the vector store
+    @Bean
+    CommandLineRunner ingestTermOfServiceToVectorStore(VectorStore vectorStore,
+                                                       @Value("classpath:rag/terms-of-service.txt") Resource termsOfServiceDocs) {
+        return args -> vectorStore.write(
+                new TokenTextSplitter().transform(
+                        new TextReader(termsOfServiceDocs).read()));
+    }
 
-	// Ingest the document into the vector store
-	@Bean
-	CommandLineRunner ingestTermOfServiceToVectorStore(VectorStore vectorStore,
-			@Value("classpath:rag/terms-of-service.txt") Resource termsOfServiceDocs) {
+    @Bean
+    public ChatMemory chatMemory() {
+        return MessageWindowChatMemory.builder().build();
+    }
 
-		// @formatter:off
-		return args -> vectorStore.write(
-						new TokenTextSplitter().transform(
-								new TextReader(termsOfServiceDocs).read()));
-		// @formatter:on
-	}
-
-	@Bean
-	public ChatMemory chatMemory() {
-		return MessageWindowChatMemory.builder().build();
-	}
-
-	// Optional suppress the actuator server observations. This hides the actuator
-	// prometheus traces.
-	@Bean
-	ObservationPredicate noActuatorServerObservations() {
-		return (name, context) -> {
-			if (name.equals("http.server.requests")
-					&& context instanceof ServerRequestObservationContext serverContext) {
-				String requestUri = serverContext.getCarrier().getRequestURI();
-				return !requestUri.startsWith("/actuator") && !requestUri.startsWith("/VAADIN")
-						&& !requestUri.startsWith("/HILLA") && !requestUri.startsWith("/connect")
-						&& !requestUri.startsWith("/**") && !requestUri.equalsIgnoreCase("/");
-			}
-			else {
-				return true;
-			}
-		};
-	}
-
-	// @Bean
-	// @ConditionalOnMissingBean
-	// public VectorStore vectorStore(EmbeddingModel embeddingModel) {
-	// return new SimpleVectorStore(embeddingModel);
-	// }
-
+    // Optional suppress the actuator server observations. This hides the actuator
+    // prometheus traces.
+    @Bean
+    ObservationPredicate noActuatorServerObservations() {
+        return (name, context) -> {
+            if (name.equals("http.server.requests")
+                    && context instanceof ServerRequestObservationContext serverContext) {
+                String requestUri = serverContext.getCarrier().getRequestURI();
+                return !requestUri.startsWith("/actuator") && !requestUri.startsWith("/VAADIN")
+                        && !requestUri.startsWith("/HILLA") && !requestUri.startsWith("/connect")
+                        && !requestUri.startsWith("/**") && !requestUri.equalsIgnoreCase("/");
+            } else {
+                return true;
+            }
+        };
+    }
 }

@@ -19,7 +19,6 @@
 	<properties>
 		<java.version>21</java.version>
 		<vaadin.version>24.8.0.alpha7</vaadin.version>
-		<!-- <vaadin.version>24.4.17</vaadin.version> -->
 		<spring-ai.version>1.0.0</spring-ai.version>
 	</properties>
 
@@ -44,59 +43,16 @@
 
 	<dependencies>
 
-		<!-- OpenAI (Used also for Groq access) -->
+		<!-- Groq -->
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-starter-model-openai</artifactId>
 		</dependency>
-		<!-- <dependency>
+
+		<dependency>
 			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-starter-model-anthropic</artifactId>
-		</dependency> -->
-
-		<!-- Standalone Embedding Model. To be used in combination with the Athropic, Groq, Vertex
-		Geminie chat models -->
-		<!-- <dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-transformers-spring-boot-starter</artifactId>
-		</dependency> -->
-
-
-
-		<!-- Anthropic (requires the transformers embedding model) -->
-		<!-- <dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-anthropic-spring-boot-starter</artifactId>
-		</dependency> -->
-
-		<!-- Azure OpenAI -->
-		<!-- <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-azure-openai-spring-boot-starter</artifactId>
-        </dependency> -->
-
-		<!-- VertexAI Gemini (requires the transformers embedding model) -->
-		<!-- <dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-vertex-ai-gemini-spring-boot-starter</artifactId>
-		</dependency> -->
-
-		<!-- Mistral AI -->
-		<!-- <dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-mistral-ai-spring-boot-starter</artifactId>
-		</dependency> -->
-
-		<!-- Vector Databases -->
-		<!-- <dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-pgvector-store-spring-boot-starter</artifactId>
-		</dependency> -->
-
-		<!-- <dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-qdrant-store-spring-boot-starter</artifactId>
-		</dependency> -->
+			<artifactId>spring-ai-starter-model-transformers</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
@@ -107,12 +63,6 @@
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-advisors-vector-store</artifactId>
 		</dependency>
-
-		<!-- <dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-starter-mcp-client</artifactId>
-		</dependency> -->
-
 
 		<!-- Vaadin -->
 		<dependency>
@@ -135,36 +85,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
-		</dependency>
-
-		<!-- Observability -->
-
-		<!-- Tracing -->
-		<dependency>
-			<groupId>io.micrometer</groupId>
-			<artifactId>micrometer-tracing-bridge-brave</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.zipkin.reporter2</groupId>
-			<artifactId>zipkin-reporter-brave</artifactId>
-		</dependency>
-
-		<!-- Metrics-->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.micrometer</groupId>
-			<artifactId>micrometer-registry-prometheus</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- Logging (Loki) -->
-		<dependency>
-			<groupId>com.github.loki4j</groupId>
-			<artifactId>loki-logback-appender</artifactId>
-			<version>1.5.1</version>
 		</dependency>
 
 		<dependency>

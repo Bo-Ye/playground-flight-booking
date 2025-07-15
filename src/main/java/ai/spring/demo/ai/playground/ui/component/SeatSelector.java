@@ -15,7 +15,6 @@ public class SeatSelector extends Composite<VerticalLayout> {
     private static final int ROWS = 12;
     private static final int SEATS_PER_ROW = 6;
     private static final char[] SEAT_LETTERS = {'A', 'B', 'C', 'D', 'E', 'F'};
-
     private String selectedSeat;
     private final VerticalLayout seatGrid = new VerticalLayout();
 
@@ -28,7 +27,7 @@ public class SeatSelector extends Composite<VerticalLayout> {
 
     /**
      * Creates a new SeatSelector component with a pre-selected seat.
-     * 
+     *
      * @param selectedSeat the initially selected seat (e.g. "1A")
      */
     public SeatSelector(String selectedSeat) {
@@ -84,8 +83,8 @@ public class SeatSelector extends Composite<VerticalLayout> {
 
     /**
      * Creates a button representing a seat.
-     * 
-     * @param seatId the seat identifier (e.g. "1A")
+     *
+     * @param seatId     the seat identifier (e.g. "1A")
      * @param seatLetter the seat letter
      * @param isSelected whether the seat is currently selected
      * @return the seat button
@@ -93,15 +92,15 @@ public class SeatSelector extends Composite<VerticalLayout> {
     private Button createSeatButton(String seatId, char seatLetter, boolean isSelected) {
         Button seat = new Button(String.valueOf(seatLetter));
         seat.getStyle()
-            .set("width", "30px")
-            .set("height", "30px")
-            .set("margin", "2px")
-            .set("padding", "0")
-            .set("background-color", isSelected ? "blue" : "lightgray")
-            .set("color", isSelected ? "white" : "black")
-            .set("text-align", "center")
-            .set("line-height", "30px")
-            .set("cursor", "pointer");
+                .set("width", "30px")
+                .set("height", "30px")
+                .set("margin", "2px")
+                .set("padding", "0")
+                .set("background-color", isSelected ? "blue" : "lightgray")
+                .set("color", isSelected ? "white" : "black")
+                .set("text-align", "center")
+                .set("line-height", "30px")
+                .set("cursor", "pointer");
 
         seat.addClickListener(event -> handleSeatClick(seatId));
 
@@ -110,7 +109,7 @@ public class SeatSelector extends Composite<VerticalLayout> {
 
     /**
      * Handles a seat click event.
-     * 
+     *
      * @param seatId the clicked seat identifier
      */
     private void handleSeatClick(String seatId) {
@@ -121,7 +120,7 @@ public class SeatSelector extends Composite<VerticalLayout> {
 
     /**
      * Gets the currently selected seat.
-     * 
+     *
      * @return the selected seat identifier
      */
     public String getSelectedSeat() {
@@ -130,7 +129,7 @@ public class SeatSelector extends Composite<VerticalLayout> {
 
     /**
      * Sets the selected seat.
-     * 
+     *
      * @param selectedSeat the seat identifier to select
      */
     public void setSelectedSeat(String selectedSeat) {
@@ -140,7 +139,7 @@ public class SeatSelector extends Composite<VerticalLayout> {
 
     /**
      * Adds a listener for seat selection events.
-     * 
+     *
      * @param listener the listener to add
      * @return a registration for removing the listener
      */
@@ -156,7 +155,7 @@ public class SeatSelector extends Composite<VerticalLayout> {
 
         /**
          * Creates a new seat selected event.
-         * 
+         *
          * @param source the source component
          * @param seatId the selected seat identifier
          */
@@ -167,7 +166,7 @@ public class SeatSelector extends Composite<VerticalLayout> {
 
         /**
          * Gets the selected seat identifier.
-         * 
+         *
          * @return the selected seat identifier
          */
         public String getSeatId() {

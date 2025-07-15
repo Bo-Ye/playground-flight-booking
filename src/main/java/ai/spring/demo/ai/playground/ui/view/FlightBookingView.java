@@ -10,7 +10,6 @@ import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageList;
 import com.vaadin.flow.component.messages.MessageListItem;
@@ -25,8 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Route("")
 public class FlightBookingView extends SplitLayout {
-
-
     private final FlightBookingService flightBookingService;
     private final CustomerSupportAssistant assistant;
     private Grid<BookingDetails> grid;
@@ -34,8 +31,8 @@ public class FlightBookingView extends SplitLayout {
     private UI ui;
 
     public FlightBookingView(
-        FlightBookingService flightBookingService,
-        CustomerSupportAssistant assistant
+            FlightBookingService flightBookingService,
+            CustomerSupportAssistant assistant
     ) {
         this.flightBookingService = flightBookingService;
         this.assistant = assistant;
@@ -48,7 +45,6 @@ public class FlightBookingView extends SplitLayout {
 
         updateBookings();
     }
-
 
     private Component createChatLayout() {
         var chatLayout = new VerticalLayout();
@@ -75,7 +71,6 @@ public class FlightBookingView extends SplitLayout {
         return grid;
     }
 
-
     private void handleMessageInput(String userMessage, MessageList messageList) {
         var userMessageItem = new MessageListItem(userMessage, null, "You");
         userMessageItem.setUserColorIndex(1);
@@ -86,16 +81,16 @@ public class FlightBookingView extends SplitLayout {
         responseItem.setUserColorIndex(2);
 
         assistant.chat(chatId, userMessage, this)
-            .doOnComplete(() -> ui.access(this::updateBookings))
-            .subscribe(token -> ui.access(() -> {
-                if (first.get()) {
-                    responseItem.setText(token);
-                    messageList.addItem(responseItem);
-                    first.set(false);
-                } else {
-                    responseItem.appendText(token);
-                }
-            }));
+                .doOnComplete(() -> ui.access(this::updateBookings))
+                .subscribe(token -> ui.access(() -> {
+                    if (first.get()) {
+                        responseItem.setText(token);
+                        messageList.addItem(responseItem);
+                        first.set(false);
+                    } else {
+                        responseItem.appendText(token);
+                    }
+                }));
     }
 
     @Tool(description = "Request the user to select a new seat")

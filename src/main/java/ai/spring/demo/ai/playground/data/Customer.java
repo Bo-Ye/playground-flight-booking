@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Customer {
-
     private String firstName;
     private String lastName;
-
     private List<Booking> bookings = new ArrayList<>();
 
     public Customer() {
