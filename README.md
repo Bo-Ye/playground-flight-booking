@@ -13,9 +13,12 @@ This app shows how you can use [Spring AI](https://github.com/spring-projects/sp
 ## Requirements
 
 - Java 21+
+- Install chromadb
 
 ## Running
 
+- On Linux or Mac, chroma run
+- (On windows, chroma run --host 127.0.0.1 --port 8000 to force binding IPv4)
 - Run the app by running `Application.java` in your IDE or 
 - `mvn spring-boot:run` in the command line.
 
